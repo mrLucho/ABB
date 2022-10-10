@@ -37,17 +37,21 @@ class Driver(webdriver.Chrome):
 
 
 
-    def answer(self,answerStr:str):
-        btn = self.find_elements(By.CLASS_NAME,"wpcf7-list-item-label")
+    def answer(self,answerStr:str,order):
+        fieldset = self.find_element(By.CSS_SELECTOR,f'fieldset[data-cf7mls-order="{order}"]')
+        if not fieldset:
+            print('no found fieldset')
+        btn = fieldset.find_elements(By.CLASS_NAME,"wpcf7-list-item-label")
         for sm in btn[:3]:
-            print(sm.text)
             if sm.text.__contains__(answerStr):
                 print('selected',sm.text)
                 sm.click()
+            else:
+                print(sm.text)
 
 
-    def goAhead(self):
-        dalejBtn = self.find_element(By.ID,"cf7mls-next-btn-cf7mls_step-2")
+    def goAhead(self,order):
+        dalejBtn = self.find_element(By.ID,f"cf7mls-next-btn-cf7mls_step-{order}")
         dalejBtn.click()
 
     def getAllQuest(self):
@@ -74,19 +78,16 @@ class Driver(webdriver.Chrome):
         for i in range(9):
 
             print(i + 1,self.qLst[i])
-            sleep(1)
+            timeToWait = 0.2
+            sleep(timeToWait)
 
             ans = self.getAnswer(i)
-            sleep(1)
-
             # if ans:
-            self.answer(ans)
-            sleep(1)
+            self.answer(ans,i+1)
+            sleep(timeToWait)
 
-            self.goAhead()
-            sleep(1)
+            self.goAhead(i+2)
 
-            sleep(1)
         #     # else:
         #     # print('not found in DB')
 
