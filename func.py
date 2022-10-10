@@ -29,7 +29,7 @@ class Driver(webdriver.Chrome):
         with open('dict.csv',newline='') as file:
             reader = csv.reader(file,delimiter=',')
             for row in reader:
-                self.QA[row[0]] = row[1]
+                self.QA[row[0]] = str(row[1])
 
     def getAnswer(self,questNum):
         que = self.qLst[questNum]
@@ -73,12 +73,20 @@ class Driver(webdriver.Chrome):
         self.getAllQuest()
         for i in range(9):
 
-            print(i + 1)
+            print(i + 1,self.qLst[i])
+            sleep(1)
+
             ans = self.getAnswer(i)
+            sleep(1)
+
             # if ans:
             self.answer(ans)
+            sleep(1)
+
             self.goAhead()
-            sleep(0.5)
+            sleep(1)
+
+            sleep(1)
         #     # else:
         #     # print('not found in DB')
 
