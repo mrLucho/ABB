@@ -73,7 +73,7 @@ class Driver(webdriver.Chrome):
         self.loadQ_A()
         self.implicitly_wait(30)
         self.startQuiz()
-        sleep(0.5)
+        sleep(0.2)
         self.getAllQuest()
         for i in range(9):
 
@@ -93,3 +93,7 @@ class Driver(webdriver.Chrome):
 
 
 #         paste text of answer
+
+
+driver = Driver()
+driver.main()
