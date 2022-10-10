@@ -17,18 +17,13 @@ class Driver(webdriver.Chrome):
         self.implicitly_wait(3)
         self.maximize_window()
         self.QA = {}
+        self.qLst = []
 
     def land_first_page(self):
         self.get(r'https://backtoschoolwithabb.pl/quiz/')
     def startQuiz(self):
         startBtn = self.find_element(By.ID,"cf7mls-next-btn-cf7mls_step-1")
         startBtn.click()
-    def identifyQuestion(self):
-        # WebDriverWait(self,3).until(EC.presence_of_element_located((By.XPATH,'//span[contains(@class,"form-title")]')))
-        question = self.find_element(By.XPATH,'//span[contains(@class,"form-title")]')
-        # question = self.find_element(By.CSS_SELECTOR, 'span[class="form-title"]')
-        # return question.text class="wpcf7-form-control-wrapper"
-        print(question.text)
 
     def loadQ_A(self):
         with open('dict.csv',newline='') as file:
@@ -36,23 +31,56 @@ class Driver(webdriver.Chrome):
             for row in reader:
                 self.QA[row[0]] = row[1]
 
-    def getAnswer(self,questionName:str):
-        for key in self.QA.keys():
-            if questionName == key:
-                return self.QA[key]
+    def getAnswer(self,questNum):
+        que = self.qLst[questNum]
+        return self.QA[que]
+
+
 
     def answer(self,answerStr:str):
-        btn = self.find_element(By.CSS_SELECTOR,f'input[value="{answerStr}"]')
-        btn.click()
-        pass
+        btn = self.find_elements(By.CLASS_NAME,"wpcf7-list-item-label")
+        for sm in btn[:3]:
+            print(sm.text)
+            if sm.text.__contains__(answerStr):
+                print('selected',sm.text)
+                sm.click()
+
+
     def goAhead(self):
-        dalejBtn = self.find_element(By.CLASS_NAME,"cf7mls_next cf7mls_btn action-button")
+        dalejBtn = self.find_element(By.ID,"cf7mls-next-btn-cf7mls_step-2")
         dalejBtn.click()
 
+    def getAllQuest(self):
+        question = self.find_elements(By.CLASS_NAME, 'wpcf7-form-control-wrap')
+        # print(len(question))
+        # for i in question:
+        #     print(i.get_attribute("data-name"))
+        new = question[::2]
+        new = new[:10]
+        for elem in new:
+            self.qLst.append(elem.get_attribute("data-name"))
+
+        # print()
+        # for i in new:
+        #     print(i.get_attribute("data-name"))
 
     def main(self):
         self.land_first_page()
+        self.loadQ_A()
         self.implicitly_wait(30)
         self.startQuiz()
         sleep(0.5)
-        self.identifyQuestion()
+        self.getAllQuest()
+        for i in range(9):
+
+            print(i + 1)
+            ans = self.getAnswer(i)
+            # if ans:
+            self.answer(ans)
+            self.goAhead()
+            sleep(0.5)
+        #     # else:
+        #     # print('not found in DB')
+
+
+#         paste text of answer
